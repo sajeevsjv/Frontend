@@ -8,13 +8,14 @@ function GetSingleUser() {
     const [data, setData] = useState(null);
 
     useEffect(() => {
-        async function getallusers() {
+        console.log("useEffect rendering");
+        async function getsingleuser() {
             console.log("local storage :", localStorage)
             const authToken = localStorage.getItem("authToken");
             console.log("authtoken :", authToken);
 
             try {
-                let response = await axios("http://localhost:3001/users", {
+                let response = await axios(`http://localhost:3001/users/${id}`, {
                     method: "GET",
                     headers: {
                         "Authorization": `bearer ${authToken}`,
@@ -24,11 +25,9 @@ function GetSingleUser() {
 
                 console.log("new response:", response);
 
-                let datas = response.data;
-                console.log("datassss", datas);
-                setData(datas);
-
-
+                let user = response.data;
+                console.log("user datas", user);
+                setData(user);
             }
             catch (error) {
                 if (error.response) {
@@ -42,23 +41,24 @@ function GetSingleUser() {
             }
         }
 
-        getallusers();
+        getsingleuser();
 
     }, []);
 
-    const user = data ? data.find((datas) => datas._id === id) : null;
-    console.log("user:", user);
+
 
     return (
         <>  
+        { data ? 
             <div id="viewuser" className="container1">
-                <div className="img-div"><img src= '' alt='img' /></div>
+                <div className="img-div"><img src= {data.image} alt='img' /></div>
                 <div className="line" />
-                <div className="text-div"><h4>{user.name}</h4></div>
-                <div className="text-div-email"><h4>{user.email}</h4></div>
+                <div className="text-div"><h4>{data.name}</h4></div>
+                <div className="text-div-email"><h4>{data.email}</h4></div>
                 <div className="btn-div"><span><button className="btn1" ><ion-icon name="create-outline" /></button></span>
                 <span><button className="btn1"><ion-icon name="trash-outline" /></button></span></div>
             </div>
+            : <h4>loading data..</h4>}
         </>
     )
 }
